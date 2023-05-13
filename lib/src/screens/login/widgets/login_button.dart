@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:setram/src/screens/routes.dart';
 
 class LoginButton extends StatelessWidget {
   const LoginButton({Key? key}) : super(key: key);
@@ -18,7 +19,9 @@ class LoginButton extends StatelessWidget {
         "Se connecter",
         style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       ),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.of(context).pushNamed(Routes.home);
+      },
     );
   }
 }
