@@ -8,19 +8,48 @@ class MyDocuments extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text(
-            "Votre Documents :",
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.fromLTRB(25, 10, 25, 40),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(50),
+              bottomRight: Radius.circular(50),
+            ),
           ),
-          SizedBox(height: 20),
-          Document(name: "test"),
-        ],
-      ),
+          child: Row(
+            children: const [
+              Text(
+                "Votre Documents :",
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            child: Column(
+              children: const [
+                Document(name: "test"),
+                SizedBox(height: 5),
+                Document(name: "test"),
+                SizedBox(height: 5),
+                Document(name: "test"),
+                SizedBox(height: 5),
+                Document(name: "test"),
+                SizedBox(height: 5),
+                Document(name: "test"),
+                SizedBox(height: 5),
+                Document(name: "test"),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -40,14 +69,6 @@ class Document extends StatelessWidget {
           color: Colors.grey.shade200,
           width: 1,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.08),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: Offset(0, 3), // changes position of shadow
-          ),
-        ],
       ),
       child: Material(
         type: MaterialType.transparency,

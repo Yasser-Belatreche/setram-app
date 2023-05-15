@@ -29,6 +29,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
+        backgroundColor: const Color.fromARGB(255, 123, 0, 245),
         child: const Icon(LineIcons.download),
       ),
       body: SingleChildScrollView(

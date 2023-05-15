@@ -12,9 +12,7 @@ class MyPlanning extends StatelessWidget {
 }
 
 class TasksPage extends StatefulWidget {
-  const TasksPage({
-    Key? key,
-  }) : super(key: key);
+  const TasksPage({Key? key}) : super(key: key);
 
   @override
   State<TasksPage> createState() => _TasksPageState();
@@ -32,7 +30,6 @@ class _TasksPageState extends State<TasksPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromRGBO(242, 244, 255, 1),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
