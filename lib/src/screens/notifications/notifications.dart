@@ -104,8 +104,9 @@ class Notification extends StatelessWidget {
                 SizedBox(height: 10),
                 Row(
                   children: [
-                    Icon(LineIcons.clock, size: 12),
-                    SizedBox(width: 5),
+                    Icon(LineIcons.clock,
+                        size: 12, color: Colors.grey.shade400),
+                    SizedBox(width: 2),
                     Text(
                       "10 minute",
                       style: TextStyle(

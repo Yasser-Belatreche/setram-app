@@ -92,10 +92,6 @@ class Document extends StatelessWidget {
                     ),
                     child: const Icon(LineIcons.pdfFile, color: Colors.white),
                   ),
-                  // const SvgIcon(
-                  //   path: ICONS.pdf,
-                  //   width: 40,
-                  // ),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

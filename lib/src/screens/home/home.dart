@@ -151,7 +151,7 @@ class BottomNavigation extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           duration: const Duration(milliseconds: 400),
           activeColor: Colors.black,
-          tabBackgroundColor: Colors.grey.shade100,
+          tabBackgroundColor: Colors.grey.shade50,
           color: Colors.black,
           selectedIndex: selectedIndex,
           onTabChange: onTabPress,
