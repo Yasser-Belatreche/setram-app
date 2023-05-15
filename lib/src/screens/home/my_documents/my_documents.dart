@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:setram/src/screens/routes.dart';
-import 'package:setram/src/ui/svg_icon.dart';
-import 'package:setram/src/utils/icons.dart';
 
 class MyDocuments extends StatelessWidget {
   const MyDocuments({Key? key}) : super(key: key);
@@ -24,26 +23,30 @@ class MyDocuments extends StatelessWidget {
             children: const [
               Text(
                 "Votre Documents :",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ],
           ),
         ),
         Expanded(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(10, 20, 10, 10),
+            padding: const EdgeInsets.all(20),
             child: Column(
               children: const [
                 Document(name: "test"),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Document(name: "test"),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Document(name: "test"),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Document(name: "test"),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Document(name: "test"),
-                SizedBox(height: 5),
+                SizedBox(height: 10),
                 Document(name: "test"),
               ],
             ),
@@ -62,13 +65,10 @@ class Document extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 70,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Colors.grey.shade200,
-          width: 1,
-        ),
       ),
       child: Material(
         type: MaterialType.transparency,
@@ -80,28 +80,41 @@ class Document extends StatelessWidget {
               Navigator.of(context).pushNamed(Routes.document);
             },
             child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 18, horizontal: 15),
+              padding: EdgeInsets.all(10),
               child: Row(
                 children: [
-                  const SvgIcon(
-                    path: ICONS.pdf,
+                  Container(
                     width: 40,
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 123, 0, 245),
+                      borderRadius: BorderRadius.all(Radius.circular(30)),
+                    ),
+                    child: const Icon(LineIcons.pdfFile, color: Colors.white),
                   ),
-                  SizedBox(width: 10),
+                  // const SvgIcon(
+                  //   path: ICONS.pdf,
+                  //   width: 40,
+                  // ),
+                  const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Text(
                         name,
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                      Text(
+                      const Text(
                         "Informatique",
                         style: TextStyle(
-                          fontSize: 14,
+                          color: Colors.grey,
+                          fontSize: 10,
                           fontWeight: FontWeight.w600,
-                          color: Colors.grey.shade300,
                         ),
                       ),
                     ],

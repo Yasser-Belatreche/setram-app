@@ -24,7 +24,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
       appBar: AppBar(
         foregroundColor: Colors.black,
         backgroundColor: Colors.white,
-        elevation: 1.1,
+        elevation: 0.5,
         title: const Text("Document"),
       ),
       floatingActionButton: FloatingActionButton(

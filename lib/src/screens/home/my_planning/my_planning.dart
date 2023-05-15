@@ -46,7 +46,7 @@ class _TasksPageState extends State<TasksPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  DateFormat('MMM, d', "fr").format(_selectedDate),
+                  DateFormat('MMM, d').format(_selectedDate),
                   style: const TextStyle(
                     color: Colors.black,
                     fontSize: 25,
