@@ -5,6 +5,7 @@ import 'package:setram/src/screens/home/my_documents/my_documents.dart';
 import 'package:setram/src/screens/home/my_planning/my_planning.dart';
 import 'package:setram/src/screens/home/principle/principle.dart';
 import 'package:setram/src/screens/home/profile/profile.dart';
+import 'package:setram/src/screens/routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -63,27 +64,53 @@ class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Material(
-              type: MaterialType.transparency,
-              child: Ink(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(50.0),
-                  border: Border.all(
-                    width: 1,
-                    color: Colors.grey.shade200,
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Material(
+                  type: MaterialType.transparency,
+                  child: Ink(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50.0),
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey.shade200,
+                      ),
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(Routes.notifications);
+                      },
+                      borderRadius: BorderRadius.circular(50.0),
+                      child: const Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: Icon(LineIcons.bell),
+                      ),
+                    ),
                   ),
                 ),
-                child: InkWell(
-                  onTap: () {},
-                  borderRadius: BorderRadius.circular(50.0),
-                  child: const Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Icon(LineIcons.bell),
+                Positioned(
+                  top: -8,
+                  right: -8,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(255, 123, 0, 245),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Text(
+                      "10",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            )
+              ],
+            ),
           ],
         ),
       ),
