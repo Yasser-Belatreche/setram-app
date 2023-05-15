@@ -28,9 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const TopNavBar(),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigation(
         selectedIndex: _selectedIndex,
         onTabPress: (index) {
@@ -73,7 +71,7 @@ class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
                   borderRadius: BorderRadius.circular(50.0),
                   border: Border.all(
                     width: 1,
-                    color: Colors.grey[300]!,
+                    color: Colors.grey.shade200,
                   ),
                 ),
                 child: InkWell(
@@ -112,42 +110,30 @@ class BottomNavigation extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             blurRadius: 20,
-            color: Colors.black.withOpacity(.1),
+            color: Colors.grey.withOpacity(.04),
           )
         ],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
         child: GNav(
-          rippleColor: Colors.grey[300]!,
-          hoverColor: Colors.grey[100]!,
+          rippleColor: Colors.grey.shade300,
+          hoverColor: Colors.grey.shade100,
           gap: 8,
-          activeColor: Colors.black,
           iconSize: 24,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
           duration: const Duration(milliseconds: 400),
-          tabBackgroundColor: Colors.grey[100]!,
+          activeColor: Colors.black,
+          tabBackgroundColor: Colors.grey.shade100,
           color: Colors.black,
-          tabs: const [
-            GButton(
-              icon: LineIcons.home,
-              text: 'Accuel',
-            ),
-            GButton(
-              icon: LineIcons.alternateFile,
-              text: 'Documents',
-            ),
-            GButton(
-              icon: LineIcons.calendar,
-              text: 'Planning',
-            ),
-            GButton(
-              icon: LineIcons.user,
-              text: 'Profile',
-            ),
-          ],
           selectedIndex: selectedIndex,
           onTabChange: onTabPress,
+          tabs: const [
+            GButton(icon: LineIcons.home, text: 'Accueil'),
+            GButton(icon: LineIcons.alternateFile, text: 'Documents'),
+            GButton(icon: LineIcons.calendar, text: 'Planning'),
+            GButton(icon: LineIcons.user, text: 'Profile'),
+          ],
         ),
       ),
     );

@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'setram',
       theme: ThemeData(
-        primaryColor: Colors.grey[800],
         fontFamily: "Inter",
         primarySwatch: Colors.blue,
       ),

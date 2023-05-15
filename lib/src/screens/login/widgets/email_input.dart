@@ -22,11 +22,11 @@ class EmailInput extends StatelessWidget {
             hintStyle: TextStyle(color: Color(0xFFE68C8C)),
             contentPadding: EdgeInsets.all(18),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFD0D5DD), width: 2),
+              borderSide: BorderSide(color: Color(0xFFD0D5DD), width: 1.5),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFFD0D5DD), width: 2),
+              borderSide: BorderSide(color: Color(0xFFD0D5DD), width: 1.5),
               borderRadius: BorderRadius.all(Radius.circular(10)),
             ),
             prefixIcon: Icon(Icons.email_outlined, color: Colors.grey),
