@@ -1,6 +1,6 @@
 class GetAnnouncementsQueryParams {
-  final String page;
-  final String perPage;
+  final int page;
+  final int perPage;
 
-  GetAnnouncementsQueryParams(this.page, this.perPage);
+  GetAnnouncementsQueryParams({required this.page, required this.perPage});
 }

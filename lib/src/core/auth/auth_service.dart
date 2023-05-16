@@ -5,6 +5,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:setram/src/core/auth/api_contracts/employee.dart';
 import 'package:setram/src/core/auth/api_contracts/login_body.dart';
 import 'package:setram/src/core/base_url.dart';
+import 'package:setram/src/core/planning/planning_service.dart' as planning;
 
 String? _token;
 Employee? _employee;
@@ -47,10 +48,15 @@ Future<Employee> getAuthEmployee() async {
 }
 
 Future<void> logout() async {
+  await _invalidateCache();
+}
+
+Future<void> _invalidateCache() async {
+  _token = null;
+  _employee = null;
   await _storage.clear();
 
-  _employee = null;
-  _token = null;
+  planning.invalidateCache();
 }
 
 Future<bool> isLoggedIn() async {

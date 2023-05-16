@@ -1,6 +1,6 @@
 class GetEventsQueryParams {
-  final String page;
-  final String perPage;
+  final int page;
+  final int perPage;
 
   GetEventsQueryParams(this.page, this.perPage);
 }

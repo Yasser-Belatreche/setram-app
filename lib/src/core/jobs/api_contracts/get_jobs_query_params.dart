@@ -1,6 +1,6 @@
 class GetJobsQueryParams {
-  final String page;
-  final String perPage;
+  final int page;
+  final int perPage;
 
   GetJobsQueryParams(this.page, this.perPage);
 }
