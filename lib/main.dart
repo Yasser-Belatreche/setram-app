@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "Inter",
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Routes.initialUnauthenticated,
+      initialRoute: Routes.splash,
       routes: routes,
     );
   }
