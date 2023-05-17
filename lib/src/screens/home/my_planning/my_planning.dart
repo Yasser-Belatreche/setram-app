@@ -1,92 +1,131 @@
 import 'package:date_picker_timeline/date_picker_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:setram/src/core/planning/api_contracts/employee_planning.dart';
+import 'package:setram/src/core/planning/planning_service.dart';
+import 'package:setram/src/screens/home/my_planning/day_activity_item.dart';
+import 'package:setram/src/ui/loader.dart';
 
-class MyPlanning extends StatelessWidget {
+class MyPlanning extends StatefulWidget {
   const MyPlanning({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return const TasksPage();
-  }
+  State<MyPlanning> createState() => _MyPlanningState();
 }
 
-class TasksPage extends StatefulWidget {
-  const TasksPage({Key? key}) : super(key: key);
+class _MyPlanningState extends State<MyPlanning> {
+  EmployeePlanning? _planning;
 
   @override
-  State<TasksPage> createState() => _TasksPageState();
-}
+  void initState() {
+    super.initState();
 
-class _TasksPageState extends State<TasksPage> {
-  DateTime _selectedDate = DateTime.now();
+    _fetchPlanning();
+  }
 
-  void _onDateChange(DateTime date) {
+  Future<void> _fetchPlanning() async {
+    final response = await getMyPlanning();
+
     setState(() {
-      _selectedDate = date;
+      _planning = response;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    return _planning == null
+        ? const Center(child: Loader())
+        : PlanningView(planning: _planning!);
+  }
+}
+
+class PlanningView extends StatefulWidget {
+  final EmployeePlanning planning;
+
+  const PlanningView({Key? key, required this.planning}) : super(key: key);
+
+  @override
+  State<PlanningView> createState() => _PlanningViewState();
+}
+
+class _PlanningViewState extends State<PlanningView> {
+  DateTime _selectedDate = DateTime.now();
+
+  List<DayTiming> _getSelectedDayActivites() {
+    final Map<int, List<DayTiming>> weekDayMap = {
+      7: widget.planning.sunday,
+      1: widget.planning.monday,
+      2: widget.planning.tuesday,
+      3: widget.planning.wednesday,
+      4: widget.planning.thursday,
+      5: widget.planning.friday,
+      6: widget.planning.saturday,
+    };
+
+    print(widget.planning.wednesday);
+
+    return weekDayMap[_selectedDate.weekday]!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        DayPicker(
+          selectedDate: _selectedDate,
+          onChange: (date) {
+            setState(() {
+              _selectedDate = date;
+            });
+          },
+        ),
+        DayActivities(list: _getSelectedDayActivites()),
+      ],
+    );
+  }
+}
+
+class DayPicker extends StatelessWidget {
+  final DateTime selectedDate;
+  final void Function(DateTime) onChange;
+
+  const DayPicker({
+    Key? key,
+    required this.onChange,
+    required this.selectedDate,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.fromLTRB(25, 0, 25, 25),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(50),
+          bottomRight: Radius.circular(50),
+        ),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(25, 0, 25, 25),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(50),
-                bottomRight: Radius.circular(50),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  DateFormat('MMM, d').format(_selectedDate),
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 25),
-                DatePicker(
-                  DateTime.now(),
-                  locale: "fr",
-                  daysCount: 7,
-                  initialSelectedDate: _selectedDate,
-                  selectionColor: const Color.fromARGB(255, 123, 0, 245),
-                  onDateChange: _onDateChange,
-                )
-              ],
+          Text(
+            DateFormat('MMM, d').format(selectedDate),
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 25,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Activite",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Column(children: [
-                    ProgressCard(ProjectName: "Project", CompletedPercent: 30),
-                    ProgressCard(ProjectName: "Project", CompletedPercent: 30),
-                    ProgressCard(ProjectName: "Project", CompletedPercent: 30),
-                  ]),
-                )
-              ],
-            ),
+          const SizedBox(height: 25),
+          DatePicker(
+            DateTime.now(),
+            locale: "fr",
+            daysCount: 7,
+            initialSelectedDate: selectedDate,
+            selectionColor: const Color.fromARGB(255, 123, 0, 245),
+            onDateChange: onChange,
           )
         ],
       ),
@@ -94,71 +133,35 @@ class _TasksPageState extends State<TasksPage> {
   }
 }
 
-class ProgressCard extends StatelessWidget {
-  ProgressCard(
-      {Key? key, required this.ProjectName, required this.CompletedPercent})
-      : super(key: key);
-  late String ProjectName;
-  late int CompletedPercent;
+class DayActivities extends StatelessWidget {
+  final List<DayTiming> list;
+
+  const DayActivities({Key? key, required this.list}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+    return Expanded(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Activites",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
               ),
-              child: Row(children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 123, 0, 245),
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  child: const Icon(Icons.assignment, color: Colors.white),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      ProjectName,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(0, 5, 10, 5),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.grey.shade50,
-                      ),
-                      child: Text(
-                        "2 days ago",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ]),
             ),
-          ),
-        ],
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: list
+                  .map((activity) => DayActivityItem(activity: activity))
+                  .toList(),
+            ),
+          ],
+        ),
       ),
     );
   }
