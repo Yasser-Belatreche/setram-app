@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:setram/src/screens/routes.dart';
+import 'package:setram/src/core/documents/api_contracts/document.dart';
+import 'package:setram/src/core/documents/documents_service.dart';
+import 'package:setram/src/screens/home/my_documents/document_item.dart';
+import 'package:setram/src/ui/loader.dart';
 
 class MyDocuments extends StatelessWidget {
   const MyDocuments({Key? key}) : super(key: key);
@@ -32,93 +34,71 @@ class MyDocuments extends StatelessWidget {
             ],
           ),
         ),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: const [
-                Document(name: "test"),
-                SizedBox(height: 10),
-                Document(name: "test"),
-                SizedBox(height: 10),
-                Document(name: "test"),
-                SizedBox(height: 10),
-                Document(name: "test"),
-                SizedBox(height: 10),
-                Document(name: "test"),
-                SizedBox(height: 10),
-                Document(name: "test"),
-              ],
-            ),
-          ),
-        ),
+        const DocumentsListController(),
       ],
     );
   }
 }
 
-class Document extends StatelessWidget {
-  final String name;
+class DocumentsListController extends StatefulWidget {
+  const DocumentsListController({Key? key}) : super(key: key);
 
-  const Document({Key? key, required this.name}) : super(key: key);
+  @override
+  State<DocumentsListController> createState() =>
+      _DocumentsListControllerState();
+}
+
+class _DocumentsListControllerState extends State<DocumentsListController> {
+  bool _loading = true;
+  List<Document> documents = List.empty();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fetchDocuments();
+  }
+
+  Future<void> _fetchDocuments() async {
+    final response = await getDocuments();
+
+    setState(() {
+      _loading = false;
+      documents = response;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 70,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Material(
-        type: MaterialType.transparency,
-        child: Ink(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10.0),
-            highlightColor: Colors.grey.shade100,
-            onTap: () {
-              Navigator.of(context).pushNamed(Routes.document);
-            },
-            child: Padding(
-              padding: EdgeInsets.all(10),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 123, 0, 245),
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    child: const Icon(LineIcons.pdfFile, color: Colors.white),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const Text(
-                        "Informatique",
-                        style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
+    return _loading
+        ? const Center(child: Loader())
+        : DocumentsList(list: documents);
+  }
+}
+
+class DocumentsList extends StatelessWidget {
+  final List<Document> list;
+
+  const DocumentsList({Key? key, required this.list}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: list.map((document) {
+            if (list.last == document) {
+              return DocumentItem(document: document);
+            }
+
+            return Column(
+              children: [
+                DocumentItem(document: document),
+                const SizedBox(height: 10),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );

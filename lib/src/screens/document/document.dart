@@ -1,5 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:setram/src/core/documents/api_contracts/document.dart';
+import 'package:setram/src/core/documents/documents_service.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 class DocumentScreen extends StatefulWidget {
@@ -13,12 +17,9 @@ class _DocumentScreenState extends State<DocumentScreen> {
   final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final document = ModalRoute.of(context)!.settings.arguments as Document;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,7 +29,20 @@ class _DocumentScreenState extends State<DocumentScreen> {
         title: const Text("Document"),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () async {
+          await Dio().download(
+            getDocumentFileLink(document.id),
+            "/storage/emulated/0/Download/${document.documentOriginName}",
+            onReceiveProgress: (received, total) {
+              if (total != -1) {
+                Fluttertoast.showToast(
+                  msg:
+                      "Téléchargement: ${(received / total * 100).toStringAsFixed(0)}%",
+                );
+              }
+            },
+          );
+        },
         backgroundColor: const Color.fromARGB(255, 123, 0, 245),
         child: const Icon(LineIcons.download),
       ),
@@ -37,16 +51,16 @@ class _DocumentScreenState extends State<DocumentScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Title",
-              style: TextStyle(
+            Text(
+              document.title,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              "is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
+              document.description,
               style: TextStyle(
                 color: Colors.grey.shade800,
               ),
@@ -58,7 +72,7 @@ class _DocumentScreenState extends State<DocumentScreen> {
                 border: Border.all(color: Colors.black, width: 5),
               ),
               child: SfPdfViewer.network(
-                'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
+                getDocumentFileLink(document.id),
                 key: _pdfViewerKey,
               ),
             ),

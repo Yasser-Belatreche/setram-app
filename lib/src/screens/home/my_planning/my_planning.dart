@@ -83,7 +83,6 @@ class _TasksPageState extends State<TasksPage> {
                     ProgressCard(ProjectName: "Project", CompletedPercent: 30),
                     ProgressCard(ProjectName: "Project", CompletedPercent: 30),
                     ProgressCard(ProjectName: "Project", CompletedPercent: 30),
-                    ProgressCard(ProjectName: "Project", CompletedPercent: 30),
                   ]),
                 )
               ],
@@ -111,7 +110,6 @@ class ProgressCard extends StatelessWidget {
         children: [
           Expanded(
             child: Container(
-              height: 70,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -140,14 +138,21 @@ class ProgressCard extends StatelessWidget {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const Text(
-                      "2 days ago",
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
+                    Container(
+                      margin: const EdgeInsets.fromLTRB(0, 5, 10, 5),
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        color: Colors.grey.shade50,
                       ),
-                    )
+                      child: Text(
+                        "2 days ago",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ]),

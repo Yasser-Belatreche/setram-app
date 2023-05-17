@@ -23,3 +23,7 @@ Future<List<Document>> getDocuments() async {
       .map((e) => Document.fromJson(e))
       .toList();
 }
+
+String getDocumentFileLink(String id) {
+  return "$baseUrl/api/documents/$id/file";
+}
