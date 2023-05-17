@@ -11,7 +11,6 @@ class Job {
   final List<String> benefits;
   final String contact;
   final DateTime applicationDeadline;
-  final DateTime endDate;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -28,7 +27,6 @@ class Job {
     required this.benefits,
     required this.contact,
     required this.applicationDeadline,
-    required this.endDate,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -38,16 +36,19 @@ class Job {
       id: json["id"],
       title: json["title"],
       description: json["description"],
-      departments: json["departments"],
+      departments: (json["departments"] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       location: json["location"],
       salary: json["salary"],
       experience: json["experience"],
       education: json["education"],
-      skills: json["skills"],
-      benefits: json["benefits"],
+      skills:
+          (json["skills"] as List<dynamic>).map((e) => e.toString()).toList(),
+      benefits:
+          (json["benefits"] as List<dynamic>).map((e) => e.toString()).toList(),
       contact: json["contact"],
       applicationDeadline: DateTime.parse(json["applicationDeadline"]),
-      endDate: DateTime.parse(json["endDate"]),
       createdAt: DateTime.parse(json["createdAt"]),
       updatedAt: DateTime.parse(json["updatedAt"]),
     );

@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 
 class EmailInput extends StatelessWidget {
-  const EmailInput({Key? key}) : super(key: key);
+  final TextEditingController controller;
+
+  const EmailInput({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
+      children: [
+        const Text(
           "Email",
           style: TextStyle(
             color: Color(0xFF344054),
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
-          decoration: InputDecoration(
+          controller: controller,
+          decoration: const InputDecoration(
             hintText: 'exmaple@gmail.com',
             hintStyle: TextStyle(color: Color(0xFFE68C8C)),
             contentPadding: EdgeInsets.all(18),

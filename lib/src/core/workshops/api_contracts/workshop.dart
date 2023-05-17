@@ -26,7 +26,9 @@ class Workshop {
       id: json["id"],
       title: json["title"],
       description: json["description"],
-      departments: json["departments"],
+      departments: (json["departments"] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       workshopDate: DateTime.parse(json["workshopDate"]),
       startDate: DateTime.parse(json["startDate"]),
       endDate: DateTime.parse(json["endDate"]),

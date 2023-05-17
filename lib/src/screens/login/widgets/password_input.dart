@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PasswordInput extends StatefulWidget {
-  const PasswordInput({Key? key}) : super(key: key);
+  final TextEditingController controller;
+
+  const PasswordInput({Key? key, required this.controller}) : super(key: key);
 
   @override
   State<PasswordInput> createState() => _PasswordInputState();
@@ -12,20 +14,21 @@ class _PasswordInputState extends State<PasswordInput> {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
+      children: [
+        const Text(
           "Mot de pass",
           style: TextStyle(
             color: Color(0xFF344054),
             fontWeight: FontWeight.w500,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
+          controller: widget.controller,
           autocorrect: false,
           enableSuggestions: false,
           obscureText: true,
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: "••••••••",
             contentPadding: EdgeInsets.all(18),
             hintStyle: TextStyle(color: Color(0xFFE68C8C)),

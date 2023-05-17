@@ -24,7 +24,9 @@ class Announcement {
       id: json["id"],
       title: json["title"],
       description: json["description"],
-      departments: json["departments"],
+      departments: (json["departments"] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       startDate: DateTime.parse(json["startDate"]),
       endDate: DateTime.parse(json["endDate"]),
       createdAt: DateTime.parse(json["createdAt"]),

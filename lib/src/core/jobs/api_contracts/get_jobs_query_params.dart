@@ -1,6 +1,6 @@
 class GetJobsQueryParams {
-  final int page;
-  final int perPage;
+  int page;
+  int perPage;
 
-  GetJobsQueryParams(this.page, this.perPage);
+  GetJobsQueryParams({required this.page, required this.perPage});
 }

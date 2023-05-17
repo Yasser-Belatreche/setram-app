@@ -10,7 +10,7 @@ import 'package:setram/src/core/planning/planning_service.dart' as planning;
 String? _token;
 Employee? _employee;
 
-final LocalStorage _storage = LocalStorage("auth");
+final LocalStorage _storage = LocalStorage("auth.json");
 
 Future<void> login(LoginBody body) async {
   final response = await http.post(

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:setram/src/screens/routes.dart';
+import 'package:setram/src/ui/loader.dart';
 
 class LoginButton extends StatelessWidget {
-  const LoginButton({Key? key}) : super(key: key);
+  final bool loading;
+  final Function() onPress;
+
+  const LoginButton({Key? key, required this.loading, required this.onPress})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +19,13 @@ class LoginButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
       ),
-      child: const Text(
-        "Se connecter",
-        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-      ),
-      onPressed: () {
-        Navigator.of(context).pushNamed(Routes.home);
-      },
+      onPressed: onPress,
+      child: !loading
+          ? const Text(
+              "Se connecter",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+            )
+          : const Loader(color: Colors.white, size: 20),
     );
   }
 }

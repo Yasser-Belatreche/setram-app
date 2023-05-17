@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:setram/src/core/events/api_contracts/event.dart';
+import 'package:setram/src/core/events/api_contracts/get_events_query_params.dart';
+import 'package:setram/src/core/events/events_service.dart';
+import 'package:setram/src/screens/home/principle/widgets/events/event_item.dart';
+import 'package:setram/src/ui/loader.dart';
 
 class Events extends StatelessWidget {
   const Events({Key? key}) : super(key: key);
@@ -8,8 +12,9 @@ class Events extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: const [
+        Text(
           "Evenememnts 🎟️:",
           style: TextStyle(
             color: Colors.black,
@@ -18,96 +23,151 @@ class Events extends StatelessWidget {
           ),
         ),
         SizedBox(height: 15),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              EventItem(),
-              SizedBox(width: 10),
-              EventItem(),
-              SizedBox(width: 10),
-              EventItem(),
-              SizedBox(width: 10),
-              EventItem(),
-            ],
-          ),
-        ),
+        EventsListController(),
       ],
     );
   }
 }
 
-class EventItem extends StatelessWidget {
-  const EventItem({Key? key}) : super(key: key);
+class EventsListController extends StatefulWidget {
+  const EventsListController({Key? key}) : super(key: key);
+
+  @override
+  State<EventsListController> createState() => _EventsListControllerState();
+}
+
+class _EventsListControllerState extends State<EventsListController> {
+  bool _loading = true;
+  bool _lastPageReached = false;
+  List<Event> _events = List.empty();
+  final GetEventsQueryParams _queryParams =
+      GetEventsQueryParams(page: 1, perPage: 10);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fetchNextPage();
+  }
+
+  Future<void> _fetchNextPage() async {
+    if (_lastPageReached) return;
+
+    final response = await getEvents(_queryParams);
+
+    if (response.list.isNotEmpty) {
+      setState(() {
+        if (_loading) _loading = false;
+        _events += response.list;
+        _queryParams.page++;
+      });
+      return;
+    }
+    _lastPageReached = true;
+
+    if (_loading) {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _lastPageReached = false;
+      _loading = true;
+      _queryParams.page = 1;
+    });
+
+    await _fetchNextPage();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 300,
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: const BoxDecoration(
-                  color: Color.fromARGB(255, 197, 210, 19),
-                  borderRadius: BorderRadius.all(Radius.circular(30)),
-                ),
-                child: const Icon(LineIcons.calendarCheck, color: Colors.white),
-              ),
-              Text(
-                "2h ago",
-                style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Title",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+    return _loading
+        ? const SizedBox(
+            height: 150,
+            child: Center(
+              child: Loader(),
             ),
-          ),
-          SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(Icons.calendar_today, color: Colors.grey.shade700, size: 20),
-              SizedBox(width: 5),
-              Text(
-                "Date: 18 mai",
+          )
+        : EventsList(
+            list: _events,
+            refresh: _refresh,
+            onScrollEnd: _fetchNextPage,
+          );
+  }
+}
+
+class EventsList extends StatelessWidget {
+  final void Function() onScrollEnd;
+  final void Function() refresh;
+  final List<Event> list;
+
+  const EventsList({
+    Key? key,
+    required this.onScrollEnd,
+    required this.list,
+    required this.refresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return list.isEmpty ? _buildEmptyState() : _buildList();
+  }
+
+  Widget _buildEmptyState() {
+    return SizedBox(
+      height: 150,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.search_off),
+            GestureDetector(
+              onTap: refresh,
+              child: const Text(
+                "refrecher",
                 style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 14,
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.solid,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                 ),
               ),
-            ],
-          ),
-          SizedBox(height: 10),
-          Text(
-            "Description l;kasdfulkq lasd fqywer f;lkasdjf yqwe falksdjf qywef lsdkfj qweyf sadlfkj qweurf asldkfj qwoeiuf asdl;kfj ",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is ScrollEndNotification) {
+          onScrollEnd();
+        }
+        return true;
+      },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: list.map((event) {
+            if (list.last == event) {
+              return EventItem(event: event);
+            }
+
+            return Row(
+              children: [
+                EventItem(event: event),
+                const SizedBox(width: 10),
+              ],
+            );
+          }).toList(),
+        ),
       ),
     );
   }

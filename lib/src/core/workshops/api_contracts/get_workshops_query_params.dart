@@ -1,6 +1,6 @@
 class GetWorkshopsQueryParams {
-  final String page;
-  final String perPage;
+  int page;
+  int perPage;
 
-  GetWorkshopsQueryParams(this.page, this.perPage);
+  GetWorkshopsQueryParams({required this.page, required this.perPage});
 }

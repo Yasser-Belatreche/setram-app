@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:setram/src/core/jobs/api_contracts/get_jobs_query_params.dart';
+import 'package:setram/src/core/jobs/api_contracts/job.dart';
+import 'package:setram/src/core/jobs/jobs_service.dart';
+import 'package:setram/src/screens/home/principle/widgets/jobs/job_item.dart';
+import 'package:setram/src/ui/loader.dart';
 
 class Jobs extends StatelessWidget {
   const Jobs({Key? key}) : super(key: key);
@@ -8,8 +12,8 @@ class Jobs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
+      children: const [
+        Text(
           "Post de travail 💼:",
           style: TextStyle(
             color: Colors.black,
@@ -18,159 +22,150 @@ class Jobs extends StatelessWidget {
           ),
         ),
         SizedBox(height: 15),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              JobItem(),
-              SizedBox(width: 10),
-              JobItem(),
-              SizedBox(width: 10),
-              JobItem(),
-              SizedBox(width: 10),
-              JobItem(),
-            ],
-          ),
-        ),
+        JobsListController(),
       ],
     );
   }
 }
 
-class JobItem extends StatelessWidget {
-  const JobItem({Key? key}) : super(key: key);
+class JobsListController extends StatefulWidget {
+  const JobsListController({Key? key}) : super(key: key);
+
+  @override
+  State<JobsListController> createState() => _JobsListControllerState();
+}
+
+class _JobsListControllerState extends State<JobsListController> {
+  bool _loading = true;
+  bool _lastPageReached = false;
+  List<Job> _jobs = List.empty();
+  final GetJobsQueryParams _queryParams =
+      GetJobsQueryParams(page: 1, perPage: 10);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fetchNextPage();
+  }
+
+  Future<void> _fetchNextPage() async {
+    if (_lastPageReached) return;
+
+    final response = await getJobs(_queryParams);
+
+    if (response.list.isNotEmpty) {
+      setState(() {
+        if (_loading) _loading = false;
+        _jobs += response.list;
+        _queryParams.page++;
+      });
+      return;
+    }
+    _lastPageReached = true;
+
+    if (_loading) {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _lastPageReached = false;
+      _loading = true;
+      _queryParams.page = 1;
+    });
+
+    await _fetchNextPage();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 300,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-      ),
-      child: Padding(
-        padding: EdgeInsets.all(20),
+    return _loading
+        ? const SizedBox(
+            height: 150,
+            child: Center(
+              child: Loader(),
+            ),
+          )
+        : JobsList(
+            list: _jobs,
+            refresh: _refresh,
+            onScrollEnd: _fetchNextPage,
+          );
+  }
+}
+
+class JobsList extends StatelessWidget {
+  final void Function() onScrollEnd;
+  final void Function() refresh;
+  final List<Job> list;
+
+  const JobsList({
+    Key? key,
+    required this.onScrollEnd,
+    required this.list,
+    required this.refresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return list.isEmpty ? _buildEmptyState() : _buildList();
+  }
+
+  Widget _buildEmptyState() {
+    return SizedBox(
+      height: 150,
+      child: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 27, 183, 97),
-                    borderRadius: BorderRadius.all(Radius.circular(30)),
-                  ),
-                  child: const Icon(Icons.work_outline, color: Colors.white),
+            const Icon(Icons.search_off),
+            GestureDetector(
+              onTap: refresh,
+              child: const Text(
+                "refrecher",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.solid,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
                 ),
-                Text(
-                  "2h ago",
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Title",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
               ),
-            ),
-            SizedBox(height: 10),
-            Text(
-              "Description l;kasdfulkq lasd fqywer f;lkasdjf yqwe falksdjf qywef lsdkfj qweyf sadlfkj qweurf asldkfj qwoeiuf asdl;kfj ",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(
-                  Icons.attach_money_outlined,
-                  color: Colors.grey.shade700,
-                  size: 15,
-                ),
-                SizedBox(width: 4),
-                Text(
-                  "Salaire: 100000 DA",
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(
-                  Icons.date_range,
-                  color: Colors.grey.shade700,
-                  size: 15,
-                ),
-                SizedBox(width: 4),
-                Text(
-                  "Date Limite d'application: 18 mai",
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Row(
-              children: [
-                Icon(
-                  LineIcons.phone,
-                  color: Colors.grey.shade700,
-                  size: 15,
-                ),
-                SizedBox(width: 4),
-                Text(
-                  "Contact: yasser@gmail.com",
-                  style: TextStyle(
-                    color: Colors.grey.shade700,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            Wrap(
-              children: [
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 5, 10, 5),
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.grey.shade50,
-                  ),
-                  child: Text(
-                    "Php",
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    return NotificationListener<ScrollNotification>(
+      onNotification: (notification) {
+        if (notification is ScrollEndNotification) {
+          onScrollEnd();
+        }
+        return true;
+      },
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: list.map((job) {
+            if (list.last == job) {
+              return JobItem(job: job);
+            }
+
+            return Row(
+              children: [
+                JobItem(job: job),
+                const SizedBox(width: 10),
+              ],
+            );
+          }).toList(),
         ),
       ),
     );

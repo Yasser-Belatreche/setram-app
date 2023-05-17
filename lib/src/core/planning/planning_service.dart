@@ -7,7 +7,7 @@ import 'package:setram/src/core/planning/api_contracts/employee_planning.dart';
 
 EmployeePlanning? _planning;
 
-Future<EmployeePlanning> getJobs() async {
+Future<EmployeePlanning> getMyPlanning() async {
   if (_planning != null) return _planning!;
 
   String? token = await getToken();

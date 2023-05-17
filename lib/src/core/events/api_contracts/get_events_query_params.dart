@@ -1,6 +1,6 @@
 class GetEventsQueryParams {
-  final int page;
-  final int perPage;
+  int page;
+  int perPage;
 
-  GetEventsQueryParams(this.page, this.perPage);
+  GetEventsQueryParams({required this.page, required this.perPage});
 }

@@ -26,7 +26,9 @@ class Document {
       id: json["id"],
       title: json["title"],
       description: json["description"],
-      departments: json["departments"],
+      departments: (json["departments"] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList(),
       link: json["link"],
       documentPath: json["documentPath"],
       documentOriginName: json["documentOriginName"],
