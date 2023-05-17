@@ -30,12 +30,18 @@ class _DocumentScreenState extends State<DocumentScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          await Fluttertoast.showToast(msg: "Téléchargement Demarer");
+
           await Dio().download(
             getDocumentFileLink(document.id),
             "/storage/emulated/0/Download/${document.documentOriginName}",
-            onReceiveProgress: (received, total) {
-              if (total != -1) {
-                Fluttertoast.showToast(
+            onReceiveProgress: (received, total) async {
+              if (total == -1) return;
+
+              if (total == received) {
+                await Fluttertoast.showToast(msg: "Téléchargement Terminer");
+              } else {
+                await Fluttertoast.showToast(
                   msg:
                       "Téléchargement: ${(received / total * 100).toStringAsFixed(0)}%",
                 );
