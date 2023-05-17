@@ -62,8 +62,6 @@ class _PlanningViewState extends State<PlanningView> {
       6: widget.planning.saturday,
     };
 
-    print(widget.planning.wednesday);
-
     return weekDayMap[_selectedDate.weekday]!;
   }
 
