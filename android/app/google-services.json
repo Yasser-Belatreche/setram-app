@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "325132158128",
+    "project_id": "setram-cf165",
+    "storage_bucket": "setram-cf165.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:325132158128:android:9606cf4f1fb3e3c563a775",
+        "android_client_info": {
+          "package_name": "com.setram.setram"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "325132158128-hv0bv5gmfqi5uhftege3ibjd6jk51gst.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgp94eD8_GmaT5-F8gKk6GwOf8FxXVcXw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "325132158128-hv0bv5gmfqi5uhftege3ibjd6jk51gst.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

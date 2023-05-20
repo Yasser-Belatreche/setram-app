@@ -4,6 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:setram/src/core/auth/api_contracts/employee.dart';
 import 'package:setram/src/core/auth/auth_service.dart';
 import 'package:setram/src/screens/home/profile/profile_item.dart';
+import 'package:setram/src/screens/routes.dart';
 import 'package:setram/src/ui/loader.dart';
 
 class Profile extends StatefulWidget {
@@ -96,6 +97,9 @@ class ProfileView extends StatelessWidget {
                   label: "Joined",
                   value: DateFormat.yMd().format(employee.startingDate),
                 ),
+                const SizedBox(height: 40),
+                const LogoutButton(),
+                const SizedBox(height: 20),
               ],
             ),
           ),
@@ -149,6 +153,48 @@ class ProfileIconAndFullName extends StatelessWidget {
             ],
           )
         ],
+      ),
+    );
+  }
+}
+
+class LogoutButton extends StatelessWidget {
+  const LogoutButton({Key? key}) : super(key: key);
+
+  Future<void> _logout(BuildContext context) async {
+    await logout();
+    Navigator.of(context).pushReplacementNamed(Routes.splash);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Ink(
+        decoration: const BoxDecoration(color: Colors.white),
+        child: InkWell(
+          onTap: () {
+            _logout(context);
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+            child: Row(
+              children: const [
+                Icon(
+                  Icons.logout_outlined,
+                  size: 20,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  "Se déconnecter",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:setram/src/core/initialization.dart';
 import 'package:setram/src/screens/routes.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initOnBuild();
+
   runApp(const MyApp());
 }
 

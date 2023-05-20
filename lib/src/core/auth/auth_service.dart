@@ -1,16 +1,15 @@
 import 'dart:convert';
 
 import "package:http/http.dart" as http;
-import 'package:localstorage/localstorage.dart';
 import 'package:setram/src/core/auth/api_contracts/employee.dart';
 import 'package:setram/src/core/auth/api_contracts/login_body.dart';
 import 'package:setram/src/core/base_url.dart';
+import 'package:setram/src/core/local_storage.dart';
+import 'package:setram/src/core/notifications/notifications_service.dart';
 import 'package:setram/src/core/planning/planning_service.dart' as planning;
 
 String? _token;
 Employee? _employee;
-
-final LocalStorage _storage = LocalStorage("auth.json");
 
 Future<void> login(LoginBody body) async {
   final response = await http.post(
@@ -22,7 +21,7 @@ Future<void> login(LoginBody body) async {
 
   String token = jsonDecode(response.body)['accessToken'] as String;
 
-  await _storage.setItem("token", "Bearer $token");
+  await LocalStorage.set("token", "Bearer $token");
   _token = "Bearer $token";
 }
 
@@ -48,13 +47,15 @@ Future<Employee> getAuthEmployee() async {
 }
 
 Future<void> logout() async {
+  await unregisterDeviceFromNotifications();
+
   await _invalidateCache();
 }
 
 Future<void> _invalidateCache() async {
   _token = null;
   _employee = null;
-  await _storage.clear();
+  await LocalStorage.delete("token");
 
   planning.invalidateCache();
 }
@@ -68,7 +69,7 @@ Future<bool> isLoggedIn() async {
 Future<String?> getToken() async {
   if (_token != null) return _token;
 
-  _token = await _storage.getItem("token");
+  _token = await LocalStorage.get("token");
 
   return _token;
 }

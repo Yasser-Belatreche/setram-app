@@ -43,13 +43,15 @@ class _AnnouncementsListControllerState
   bool _lastPageReached = false;
   List<Announcement> _announcements = List.empty();
   final GetAnnouncementsQueryParams _queryParams =
-      GetAnnouncementsQueryParams(page: 1, perPage: 10);
+  GetAnnouncementsQueryParams(page: 1, perPage: 10);
 
   @override
   void initState() {
     super.initState();
 
-    _fetchNextPage();
+    if (mounted) {
+      _fetchNextPage();
+    }
   }
 
   Future<void> _fetchNextPage() async {
@@ -88,16 +90,16 @@ class _AnnouncementsListControllerState
   Widget build(BuildContext context) {
     return _loading
         ? const SizedBox(
-            height: 150,
-            child: Center(
-              child: Loader(),
-            ),
-          )
+      height: 150,
+      child: Center(
+        child: Loader(),
+      ),
+    )
         : AnnouncementsList(
-            list: _announcements,
-            refresh: _refresh,
-            onScrollEnd: _fetchNextPage,
-          );
+      list: _announcements,
+      refresh: _refresh,
+      onScrollEnd: _fetchNextPage,
+    );
   }
 }
 

@@ -58,7 +58,7 @@ class _LoginFormState extends State<LoginForm> {
         password: passwordController.text,
       ));
 
-      Navigator.of(context).pushReplacementNamed(Routes.home);
+      Navigator.of(context).pushReplacementNamed(Routes.splash);
     } catch (e) {
       print(e);
       setState(() {

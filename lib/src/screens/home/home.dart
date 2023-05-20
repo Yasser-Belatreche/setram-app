@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:setram/src/core/notifications/notifications_service.dart';
 import 'package:setram/src/screens/home/my_documents/my_documents.dart';
 import 'package:setram/src/screens/home/my_planning/my_planning.dart';
 import 'package:setram/src/screens/home/principle/principle.dart';
@@ -57,60 +58,14 @@ class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.all(10.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
+          children: const [
+            Text(
               "SETRAM",
               style: TextStyle(
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Material(
-                  type: MaterialType.transparency,
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50.0),
-                      border: Border.all(
-                        width: 1,
-                        color: Colors.grey.shade200,
-                      ),
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.of(context).pushNamed(Routes.notifications);
-                      },
-                      borderRadius: BorderRadius.circular(50.0),
-                      child: const Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Icon(LineIcons.bell),
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  top: -8,
-                  right: -8,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 123, 0, 245),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Text(
-                      "10",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            NotificationsIcon(),
           ],
         ),
       ),
@@ -119,6 +74,93 @@ class TopNavBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => const Size.fromHeight(100.0);
+}
+
+class NotificationsIcon extends StatefulWidget {
+  const NotificationsIcon({Key? key}) : super(key: key);
+
+  @override
+  State<NotificationsIcon> createState() => _NotificationsIconState();
+}
+
+class _NotificationsIconState extends State<NotificationsIcon> {
+  int? _unreadCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUnreadNotificationsCount();
+  }
+
+  Future<void> _fetchUnreadNotificationsCount() async {
+    final result = await getNotificationsUnreadCount();
+
+    if (result.count != 0) {
+      setState(() {
+        _unreadCount = result.count;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Material(
+          type: MaterialType.transparency,
+          child: Ink(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(50.0),
+              border: Border.all(
+                width: 1,
+                color: Colors.grey.shade200,
+              ),
+            ),
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  _unreadCount = null;
+                });
+                Navigator.of(context).pushNamed(Routes.notifications);
+              },
+              borderRadius: BorderRadius.circular(50.0),
+              child: const Padding(
+                padding: EdgeInsets.all(15.0),
+                child: Icon(LineIcons.bell),
+              ),
+            ),
+          ),
+        ),
+        _buildUnreadCountBadge(),
+      ],
+    );
+  }
+
+  Widget _buildUnreadCountBadge() {
+    if (_unreadCount == null) return const SizedBox.shrink();
+
+    return Positioned(
+      top: -8,
+      right: -8,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 123, 0, 245),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Text(
+          "$_unreadCount",
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class BottomNavigation extends StatelessWidget {

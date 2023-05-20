@@ -47,7 +47,9 @@ class _EventsListControllerState extends State<EventsListController> {
   void initState() {
     super.initState();
 
-    _fetchNextPage();
+    if (mounted) {
+      _fetchNextPage();
+    }
   }
 
   Future<void> _fetchNextPage() async {

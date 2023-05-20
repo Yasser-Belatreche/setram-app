@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
+import 'package:setram/src/core/notifications/api_contracts/get_notifications_query_params.dart';
+import 'package:setram/src/core/notifications/api_contracts/notification.dart'
+as n;
+import 'package:setram/src/core/notifications/notifications_service.dart';
+import 'package:setram/src/screens/notifications/notification_item.dart';
+import 'package:setram/src/ui/loader.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({Key? key}) : super(key: key);
@@ -14,114 +19,174 @@ class NotificationsScreen extends StatelessWidget {
         elevation: 0.5,
         title: const Text("Notifications"),
       ),
-      body: SingleChildScrollView(
+      body: const NotificationsListController(),
+    );
+  }
+}
+
+class NotificationsListController extends StatefulWidget {
+  const NotificationsListController({Key? key}) : super(key: key);
+
+  @override
+  State<NotificationsListController> createState() =>
+      _NotificationsListControllerState();
+}
+
+class _NotificationsListControllerState
+    extends State<NotificationsListController> {
+  bool _loading = true;
+  bool _lastPageReached = false;
+  List<n.Notification> _notifications = List.empty();
+  final GetNotificationsQueryParams _queryParams =
+  GetNotificationsQueryParams(page: 1, perPage: 10);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _fetchNextPage().then((value) async {
+      await markNotificationsAsRead();
+      return null;
+    });
+  }
+
+  Future<void> _fetchNextPage() async {
+    if (_lastPageReached) return;
+
+    final response = await getNotifications(_queryParams);
+
+    if (response.list.isNotEmpty) {
+      setState(() {
+        if (_loading) _loading = false;
+        _notifications += response.list;
+        _queryParams.page++;
+      });
+      return;
+    }
+    _lastPageReached = true;
+
+    if (_loading) {
+      setState(() {
+        _loading = false;
+      });
+    }
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _lastPageReached = false;
+      _loading = true;
+      _queryParams.page = 1;
+    });
+
+    await _fetchNextPage();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _loading
+        ? const SizedBox(
+      height: 150,
+      child: Center(
+        child: Loader(),
+      ),
+    )
+        : NotificationsList(
+      list: _notifications,
+      refresh: _refresh,
+      onScrollEnd: _fetchNextPage,
+    );
+  }
+}
+
+class NotificationsList extends StatelessWidget {
+  final void Function() onScrollEnd;
+  final void Function() refresh;
+  final List<n.Notification> list;
+
+  const NotificationsList({
+    Key? key,
+    required this.onScrollEnd,
+    required this.list,
+    required this.refresh,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return list.isEmpty ? _buildEmptyState() : _buildList();
+  }
+
+  Widget _buildEmptyState() {
+    return SizedBox(
+      height: 150,
+      child: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Notification(
-              title: "Test",
-              isNew: true,
-              description:
-                  "Lorem isppu sadlfkjas df; asdkl;fja sdpoifj asdl;kfj akl;sdfj lkasdjf ;laksdfj ; laksdjfiasdf lkaysdfjqwle ; ;lakmsdlfyuq  asdfulkasd f",
-            ),
-            Notification(
-              title: "Test",
-              isNew: true,
-              description:
-                  "Lorem isppu sadlfkjas df; asdkl;fja sdpoifj asdl;kfj akl;sdfj lkasdjf ;laksdfj ; laksdjfiasdf lkaysdfjqwle ; ;lakmsdlfyuq  asdfulkasd f",
-            ),
-            Notification(
-              title: "Test",
-              isNew: true,
-              description:
-                  "Lorem isppu sadlfkjas df; asdkl;fja sdpoifj asdl;kfj akl;sdfj lkasdjf ;laksdfj ; laksdjfiasdf lkaysdfjqwle ; ;lakmsdlfyuq  asdfulkasd f",
-            ),
-            SizedBox(height: 20),
-            Notification(
-              title: "Test",
-              isNew: false,
-              description:
-                  "Lorem isppu sadlfkjas df; asdkl;fja sdpoifj asdl;kfj akl;sdfj lkasdjf ;laksdfj ; laksdjfiasdf lkaysdfjqwle ; ;lakmsdlfyuq  asdfulkasd f",
+            const Icon(Icons.notifications_off),
+            GestureDetector(
+              onTap: refresh,
+              child: const Text(
+                "refrecher",
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                  decorationStyle: TextDecorationStyle.solid,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             )
           ],
         ),
       ),
     );
   }
-}
 
-class Notification extends StatelessWidget {
-  final String title;
-  final String description;
-  final bool isNew;
+  Widget _buildList() {
+    return Row(
+      children: [
+        Expanded(
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification is ScrollEndNotification) {
+                onScrollEnd();
+              }
+              return true;
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: list.map((notification) {
+                  final int lastIndex = list.indexOf(notification) - 1;
 
-  const Notification({
-    Key? key,
-    required this.title,
-    required this.description,
-    required this.isNew,
-  }) : super(key: key);
+                  final bool currentNotificationIsRead = notification.read;
+                  final bool lastNotificationIsUnread =
+                  list.first == notification
+                      ? !notification.read
+                      : !list
+                      .elementAt(lastIndex)
+                      .read;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(20),
-      decoration: BoxDecoration(color: Colors.white),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: isNew
-                  ? const Color.fromARGB(255, 123, 0, 245)
-                  : const Color.fromARGB(25, 123, 0, 245),
-              borderRadius: BorderRadius.circular(16),
+                  final bool firstRead =
+                      currentNotificationIsRead && lastNotificationIsUnread;
+
+                  if (firstRead) {
+                    return Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        NotificationItem(notification: notification),
+                      ],
+                    );
+                  }
+
+                  return NotificationItem(notification: notification);
+                }).toList(),
+              ),
             ),
           ),
-          SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                Text(
-                  description,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Icon(LineIcons.clock,
-                        size: 12, color: Colors.grey.shade400),
-                    SizedBox(width: 2),
-                    Text(
-                      "10 minute",
-                      style: TextStyle(
-                        color: Colors.grey.shade400,
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

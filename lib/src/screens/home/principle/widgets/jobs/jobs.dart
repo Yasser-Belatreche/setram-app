@@ -46,7 +46,9 @@ class _JobsListControllerState extends State<JobsListController> {
   void initState() {
     super.initState();
 
-    _fetchNextPage();
+    if (mounted) {
+      _fetchNextPage();
+    }
   }
 
   Future<void> _fetchNextPage() async {
